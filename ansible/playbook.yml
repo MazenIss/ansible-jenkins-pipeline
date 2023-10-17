@@ -1,0 +1,35 @@
+---
+- name: Deploy Spring Boot with MongoDB on Azure VM
+  hosts: 4.178.96.80
+  become: yes 
+
+  tasks:
+    - name: Update apt cache and install Docker
+      apt:
+        update_cache: yes
+        name: docker.io
+      become: yes
+
+    - name: Start and enable Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+      become: yes
+
+    - name: Pull MongoDB Image
+      ansible.builtin.docker_image:
+        name: mongo
+        source: pull
+
+    - name: Create MongoDB Container
+      ansible.builtin.docker_container:
+        name: mongodb
+        image: mongo
+        ports:
+          - "27017:27017"
+        volumes:
+          - 'data:/data/db'
+        state: started
+
+#todo:spring tasks 
