@@ -1,5 +1,5 @@
 - name: Deploy Spring Boot with MongoDB on Azure VM
-  hosts: 4.178.96.80
+  hosts: azure_vm
   become: yes 
 
   tasks:
