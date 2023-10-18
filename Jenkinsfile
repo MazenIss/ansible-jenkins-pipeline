@@ -1,16 +1,28 @@
 pipeline {
     agent any
+
+    environment {
+        GIT_REPO_URL = 'https://github.com/MazenIss/ansible-jenkins-pipeline.git'
+        GIT_CREDENTIALS_ID = 'git-credentials'
+    }
+
     stages {
-        stage('Checkout') {
+        stage('Fetch from Git') {
             steps {
-                git branch: 'master',
-                    credentialsId: 'github-credentials',
-                    url: 'https://github.com/MazenIss/ansible-jenkins-pipeline.git'
+                checkout([$class: 'GitSCM', branches: [[name: '*/master']],
+                    userRemoteConfigs: [[credentialsId: GIT_CREDENTIALS_ID, url: GIT_REPO_URL]]])
             }
         }
-        stage('Execute Ansible playbook') {
+
+        stage('Run Playbook') {
             steps {
-                ansiblePlaybook playbook: 'ansible/playbook.yml'
+                script {
+                    ansiblePlaybook credentialsId: 'ssh-cred',
+                        disableHostKeyChecking: true,
+                        installation: 'Ansible',
+                        inventory: "${WORKSPACE}/ansible/hosts.yml",
+                        playbook: "${WORKSPACE}/ansible/playbook.yml"
+                }
             }
         }
     }

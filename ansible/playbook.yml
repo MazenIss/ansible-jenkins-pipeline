@@ -16,6 +16,10 @@
         enabled: yes
       become: yes
 
+    - name: Create Network
+      ansible.builtin.docker_network:
+        name: spring_mongo_network
+
     - name: Pull MongoDB Image
       ansible.builtin.docker_image:
         name: mongo
@@ -27,8 +31,24 @@
         image: mongo
         ports:
           - "27017:27017"
+        networks:
+          - name: spring_mongo_network
         volumes:
           - 'data:/data/db'
         state: started
+    
+    - name: Pull SpringBoot Image
+      ansible.builtin.docker_image:
+        name: mazenissaoui2000/ob-item
+        source: pull
 
-#todo:spring tasks 
+    - name: Create SpringBoot container
+      ansible.builtin.docker_container:
+        name: springboot
+        image: mazenissaoui2000/ob-item
+        ports:
+          - "8081:8081"
+        networks:
+          - name: spring_mongo_network
+        state: started
+
