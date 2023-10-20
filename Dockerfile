@@ -1,4 +1,4 @@
-# stage 1 : build
+# stage 1 : build ..
 FROM maven:3.6.3-openjdk-11-slim AS build-stage
 
 WORKDIR /app
